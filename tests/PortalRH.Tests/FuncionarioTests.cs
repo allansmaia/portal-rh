@@ -32,4 +32,24 @@ public class FuncionarioTests
         Assert.Equal("Gerente", funcionario.Cargo);
         Assert.Equal(8000m, funcionario.Salario);
     }
+    [Fact]
+    public void Funcionario_NomeVazio_DeveLancarExcecao()
+    {
+        var ex = Record.Exception(() => new Funcionario("", "Desenvolvedor", 5000m));
+        Assert.IsType<ArgumentException>(ex);
+    }
+
+    [Fact]
+    public void Funcionario_CargoVazio_DeveLancarExcecao()
+    {
+        var ex = Record.Exception(() => new Funcionario("Ana Silva", "", 5000m));
+        Assert.IsType<ArgumentException>(ex);
+    }
+
+    [Fact]
+    public void Funcionario_SalarioZero_DeveLancarExcecao()
+    {
+        var ex = Record.Exception(() => new Funcionario("Ana Silva", "Desenvolvedora", 0m));
+        Assert.IsType<ArgumentException>(ex);
+    }
 }
