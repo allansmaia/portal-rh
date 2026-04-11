@@ -29,4 +29,9 @@ public class Funcionario
 
         return Salario * (percentual / 100);
     }
+
+    public decimal CalcularFerias()
+    {
+        return Salario + (Salario / 3);
+    }
 }
