@@ -31,4 +31,36 @@ public class DepartamentoTests
         Assert.Single(departamento.Funcionarios);
         Assert.Equal("Ana Silva", departamento.Funcionarios[0].Nome);
     }
+    [Fact]
+    public void CalcularFolha_SemFuncionarios_DeveRetornarZero()
+    {
+        var departamento = new Departamento("Tecnologia");
+
+        var total = departamento.CalcularFolha();
+
+        Assert.Equal(0m, total);
+    }
+
+    [Fact]
+    public void CalcularFolha_ComUmFuncionario_DeveRetornarSalario()
+    {
+        var departamento = new Departamento("Tecnologia");
+        departamento.AdicionarFuncionario(new Funcionario("Ana Silva", "Desenvolvedora", 5000m));
+
+        var total = departamento.CalcularFolha();
+
+        Assert.Equal(5000m, total);
+    }
+
+    [Fact]
+    public void CalcularFolha_ComMultiplosFuncionarios_DeveRetornarSoma()
+    {
+        var departamento = new Departamento("Tecnologia");
+        departamento.AdicionarFuncionario(new Funcionario("Ana Silva", "Desenvolvedora", 5000m));
+        departamento.AdicionarFuncionario(new Funcionario("Carlos Lima", "Analista", 4000m));
+
+        var total = departamento.CalcularFolha();
+
+        Assert.Equal(9000m, total);
+    }
 }

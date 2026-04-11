@@ -15,4 +15,14 @@ public class Departamento
     {
         Funcionarios.Add(funcionario);
     }
+
+    public decimal CalcularFolha()
+    {
+        decimal total = 0;
+        foreach (var funcionario in Funcionarios)
+        {
+            total += funcionario.Salario;
+        }
+        return total;
+    }
 }
