@@ -8,6 +8,15 @@ public class Funcionario
 
     public Funcionario(string nome, string cargo, decimal salario)
     {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("Nome nao pode ser vazio.");
+
+        if (string.IsNullOrWhiteSpace(cargo))
+            throw new ArgumentException("Cargo nao pode ser vazio.");
+
+        if (salario <= 0)
+            throw new ArgumentException("Salario deve ser maior que zero.");
+
         Nome = nome;
         Cargo = cargo;
         Salario = salario;
