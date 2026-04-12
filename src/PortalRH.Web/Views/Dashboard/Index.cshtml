@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+@{
+    var usuario = User.Identity?.Name ?? "Usuario";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Portal RH — Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body { background-color: #f0f2f5; }
+        .navbar { background-color: #0f6e56; }
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark px-4 py-3">
+        <span class="navbar-brand fw-bold">Portal RH</span>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white opacity-75">Ola, @usuario</span>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h5 class="mb-4">Resumo do RH</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="card-icon bg-success bg-opacity-10">
+                            <span>👥</span>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Funcionarios</div>
+                            <div class="fw-bold fs-4">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="card-icon bg-primary bg-opacity-10">
+                            <span>🏢</span>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Departamentos</div>
+                            <div class="fw-bold fs-4">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="card-icon bg-warning bg-opacity-10">
+                            <span>💰</span>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Total folha</div>
+                            <div class="fw-bold fs-4">R$ 0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="card-icon bg-info bg-opacity-10">
+                            <span>⭐</span>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Maior salario</div>
+                            <div class="fw-bold fs-4">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
