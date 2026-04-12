@@ -1,87 +1,96 @@
 @model PortalRH.Web.Services.DashboardViewModel
 @{
     Layout = null;
-    var usuario = User.Identity?.Name ?? "Usuario";
+    var usuario = User.Identity != null ? User.Identity.Name : "Usuario";
 }
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Portal RH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
-        body { background-color: #f0f2f5; }
-        .navbar-rh { background-color: #0f6e56; }
-        .card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        .nav-link-rh { color: rgba(255,255,255,0.75); text-decoration: none; }
-        .nav-link-rh:hover { color: white; }
+        body{background:#f0f2f5}
+        .topbar{background:#0f6e56;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+        .topbar a{color:rgba(255,255,255,.75);text-decoration:none;margin-right:16px}
+        .topbar a:hover{color:#fff}
+        .topbar span{color:#fff;font-weight:bold}
+        .card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
     </style>
 </head>
 <body>
-    <nav class="navbar-rh d-flex align-items-center justify-content-between px-4 py-3">
-        <span class="text-white fw-bold">Portal RH</span>
-        <div class="d-flex gap-4">
-            <a href="/Dashboard" class="nav-link-rh">Dashboard</a>
-            <a href="/Funcionario" class="nav-link-rh">Funcionarios</a>
-            <a href="/Departamento" class="nav-link-rh">Departamentos</a>
+<div class="topbar">
+    <span>Portal RH</span>
+    <div>
+        <a href="/Dashboard/Index">Dashboard</a>
+        <a href="/Funcionario/Index">Funcionarios</a>
+        <a href="/Departamento/Index">Departamentos</a>
+    </div>
+    <div>
+        <span style="color:rgba(255,255,255,.75);margin-right:12px">Ola, @usuario</span>
+        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+            <button class="btn btn-outline-light btn-sm">Sair</button>
+        </form>
+    </div>
+</div>
+<div class="container mt-4">
+    <h5>Resumo do RH</h5>
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="card-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Funcionarios</div>
+                        <div class="fw-bold fs-4">@Model.TotalFuncionarios</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="d-flex align-items-center gap-3">
-            <span class="text-white opacity-75">Ola, @usuario</span>
-            <form asp-controller="Account" asp-action="Logout" method="post">
-                <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
-            </form>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="card-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Departamentos</div>
+                        <div class="fw-bold fs-4">@Model.TotalDepartamentos</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
-    <div class="container py-4">
-        <h5 class="mb-4">Resumo do RH</h5>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="card-icon bg-success bg-opacity-10"><span>&#128101;</span></div>
-                        <div>
-                            <div class="text-muted small">Funcionarios</div>
-                            <div class="fw-bold fs-4">@Model.TotalFuncionarios</div>
-                        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="card-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Total folha</div>
+                        <div class="fw-bold fs-4">R$ @Model.TotalFolha.ToString("N0")</div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="card-icon bg-primary bg-opacity-10"><span>&#127970;</span></div>
-                        <div>
-                            <div class="text-muted small">Departamentos</div>
-                            <div class="fw-bold fs-4">@Model.TotalDepartamentos</div>
-                        </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="card-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-star-fill"></i>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="card-icon bg-warning bg-opacity-10"><span>&#128176;</span></div>
-                        <div>
-                            <div class="text-muted small">Total folha</div>
-                            <div class="fw-bold fs-4">R$ @Model.TotalFolha.ToString("N0")</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="card-icon bg-info bg-opacity-10"><span>&#11088;</span></div>
-                        <div>
-                            <div class="text-muted small">Maior salario</div>
-                            <div class="fw-bold">@Model.MaiorSalarioNome</div>
-                            <div class="text-muted small">R$ @Model.MaiorSalario.ToString("N0")</div>
-                        </div>
+                    <div>
+                        <div class="text-muted small">Maior salario</div>
+                        <div class="fw-bold">@Model.MaiorSalarioNome</div>
+                        <div class="text-muted small">R$ @Model.MaiorSalario.ToString("N0")</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
