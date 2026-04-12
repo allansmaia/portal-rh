@@ -31,6 +31,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "dashboard",
+    pattern: "Dashboard",
+    defaults: new { controller = "Dashboard", action = "Index" });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
