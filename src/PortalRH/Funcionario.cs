@@ -2,11 +2,15 @@ namespace PortalRH;
 
 public class Funcionario
 {
-    public string Nome { get; set; }
-    public string Cargo { get; set; }
+    public int Id { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string Cargo { get; set; } = string.Empty;
     public decimal Salario { get; set; }
+    public DateTime DataAdmissao { get; set; } = DateTime.Now;
 
-    public Funcionario(string nome, string cargo, decimal salario)
+    public Funcionario() { }
+
+    public Funcionario(string nome, string cargo, decimal salario, DateTime? dataAdmissao = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new ArgumentException("Nome nao pode ser vazio.");
@@ -20,6 +24,7 @@ public class Funcionario
         Nome = nome;
         Cargo = cargo;
         Salario = salario;
+        DataAdmissao = dataAdmissao ?? DateTime.Now;
     }
 
     public decimal CalcularBonus(decimal percentual)
