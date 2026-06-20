@@ -1,12 +1,24 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using PortalRH.Data;
 using PortalRH.Web.Services;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<FuncionarioService>();
-builder.Services.AddSingleton<DepartamentoService>();
-builder.Services.AddSingleton<DashboardService>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite("Data Source=portal-rh.db"));
+
+builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
+builder.Services.AddScoped<DepartamentoService>();
+builder.Services.AddScoped<DashboardService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -16,6 +28,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -31,12 +49,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "dashboard",
-    pattern: "Dashboard",
-    defaults: new { controller = "Dashboard", action = "Index" });
+    name: "default",
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    name: "funcionarios",
+    pattern: "Funcionario",
+    defaults: new { controller = "Funcionario", action = "Index" });
+
+app.MapControllerRoute(
+    name: "departamentos",
+    pattern: "Departamento",
+    defaults: new { controller = "Departamento", action = "Index" });
 
 app.Run();
