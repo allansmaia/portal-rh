@@ -1,0 +1,54 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necessário para o SonarCloud analisar o histórico do Git
+
+      - name: Instalar Java (Requerido pelo SonarScanner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Instalar .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Instalar SonarScanner para .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Iniciar Análise do SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner begin /k:"allansmaia_portal-rh" /o:"allansmaia" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
+      - name: Restaurar dependências
+        run: dotnet restore
+
+      - name: Build do projeto
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar testes com Cobertura
+        run: dotnet test --no-build --configuration Release --logger "trx" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      - name: Finalizar e Enviar para o SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
