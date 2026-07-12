@@ -1,65 +1,54 @@
-name: CI
+name: CI & SonarCloud Analysis
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout do codigo
-        uses: actions/checkout@v4
-
-      - name: Instalar .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restaurar dependencias
-        run: dotnet restore
-
-name: SonarCloud Analysis
-
-on:
-  push:
-    branches:
-      - main
-      - master
+    branches: [ main, master ]
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  build-test-sonar:
+    name: Build, Test & SonarCloud
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Requerido pelo SonarCloud para ver o histórico do Git
+          fetch-depth: 0 # Necessário para o SonarCloud analisar o histórico
 
-      - name: Setup Node.js # (Ajuste para a sua linguagem: Python, Java, etc.)
-        uses: actions/setup-node@v4
+      - name: Instalar Java (Requerido pelo SonarScanner)
+        uses: actions/setup-java@v4
         with:
-          node-version: '20'
+          distribution: 'zulu'
+          java-version: '17'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Instalar .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-      - name: Run tests and generate coverage
-        run: npm test -- --coverage # Executa os testes gerando a pasta de cobertura
+      - name: Instalar SonarScanner para .NET
+        run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: Iniciar Análise do SonarCloud
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Criado automaticamente pelo GitHub
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner begin /k:"SUA_PROJECT_KEY" /o:"SUA_ORGANIZATION" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
-      - name: Build
-        run: dotnet build --no-restore
+      - name: Restaurar dependências
+        run: dotnet restore
 
-      - name: Testes
-        run: dotnet test --no-build --verbosity normal
+      - name: Build do projeto
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar testes com Cobertura
+        run: dotnet test --no-build --configuration Release --logger "trx" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      - name: Finalizar e Enviar Análise para o SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
